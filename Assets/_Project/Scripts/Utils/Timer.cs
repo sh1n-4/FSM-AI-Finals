@@ -51,9 +51,13 @@ namespace Utilities {
         }
         
         public bool IsFinished => Time <= 0;
-        
-        public void Reset() => Time = initialTime;
-        
+
+        public void Reset()
+        {
+            Time = initialTime;
+            IsRunning = true; 
+        }
+
         public void Reset(float newTime) {
             initialTime = newTime;
             Reset();
@@ -68,9 +72,13 @@ namespace Utilities {
                 Time += deltaTime;
             }
         }
-        
-        public void Reset() => Time = 0;
-        
+
+        public void Reset()
+        {
+            Time = initialTime;
+            IsRunning = true;
+        }
+
         public float GetTime() => Time;
     }
 }

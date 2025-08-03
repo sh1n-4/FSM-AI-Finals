@@ -12,25 +12,19 @@ namespace Platformer
         [SerializeField] public PlayerDetector detector;
         [SerializeField] public NavMeshAgent agent;
 
-        /*[Header("Movement Settings")]
-        [SerializeField] float moveSpeed = 6f;
-        [SerializeField] float rotationSpeed = 15f;
-        [SerializeField] float smoothTime = 0.2f;*/
-
         [Header("Attack Settings")]
-        [SerializeField] float attackCooldown = 0.5f;
+        [SerializeField] public float attackCooldown = 0.5f;
         [SerializeField] float attackDistance = 1f;
         [SerializeField] int attackDamage = 5;
 
-        // public Transform TargetToFace { get; set; }
-
+        public CountdownTimer attackTimer;
 
         StateMachine stateMachine;
 
         void Awake()
         {
+            attackTimer = new CountdownTimer(attackCooldown);
             SetupStateMachine();
-            // agent.updateRotation = false;
         }
 
 
@@ -44,20 +38,32 @@ namespace Platformer
             var jumpState = new Enemy_JumpState(this, anim);
             var chaseState = new Enemy_ChaseState(this, anim);
 
-            At(locomotionState, attackState, new FuncPredicate(() => detector.CanAttackPlayer()));
+            Debug.Log($"[CanAttack] InRange: {detector.CanAttackPlayer()}, CooldownReady: {attackTimer.IsFinished}");
+
+
+            /*FuncPredicate CanAttackWithCooldown = new FuncPredicate(() =>
+                detector.CanAttackPlayer() && attackTimer.IsFinished);*/
+
+            At(locomotionState, attackState, new FuncPredicate(() =>
+                detector.CanAttackPlayer() && attackTimer.IsFinished));
             At(locomotionState, chaseState, new FuncPredicate(() => detector.CanDetectPlayer()));
             At(attackState, locomotionState, new FuncPredicate(() => !detector.CanAttackPlayer()));
             At(chaseState, locomotionState, new FuncPredicate(() => !detector.CanDetectPlayer()));
-
+            At(chaseState, attackState, new FuncPredicate(() =>
+                detector.CanAttackPlayer() && attackTimer.IsFinished));
+            At(attackState, chaseState, new FuncPredicate(() => !detector.CanAttackPlayer() && detector.CanDetectPlayer()));
 
             stateMachine.SetState(locomotionState);
         }
+
 
         void At(IState from, IState to, IPredicate condition) => stateMachine.AddTransition(from, to, condition);
         void Any(IState to, IPredicate condition) => stateMachine.AddAnyTransition(to, condition);
 
         void Update()
         {
+            attackTimer.Tick(Time.deltaTime);
+            Debug.Log($"[Timer] Cooldown done: {attackTimer.IsFinished}");
             stateMachine.Update();
         }
 
@@ -68,6 +74,8 @@ namespace Platformer
 
         public void Attack()
         {
+            if (!attackTimer.IsFinished) return;
+
             if (detector.Player != null)
             {
                 if (detector.CanDetectPlayer() && detector.CanAttackPlayer())
@@ -79,12 +87,12 @@ namespace Platformer
 
         public void HandleMovement()
         {
-            // Vector3 directionToPlayer = detector.Player.position - transform.position;
+            
             float speedPercent = agent.velocity.magnitude / agent.speed;
 
             if (agent.velocity.magnitude > 0f)
             {
-                // HandleRotation(directionToPlayer);
+                
                 SmoothSpeed(speedPercent);
             } else
             {
@@ -92,19 +100,16 @@ namespace Platformer
             }
         }
 
-        /*void HandleRotation(Vector3 direction)
-        {
-            direction.y = 0f;
-            if (direction != Vector3.zero)
-            {
-                Quaternion targetRotation = Quaternion.LookRotation(direction);
-                transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
-            }
-        }*/
 
         void SmoothSpeed(float speedPercent)
         {
             anim.SetFloat("Speed",  speedPercent, 0.1f, Time.deltaTime);
+        }
+
+        void OnDrawGizmosSelected()
+        {
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawWireSphere(transform.position, attackDistance);
         }
     }
 }

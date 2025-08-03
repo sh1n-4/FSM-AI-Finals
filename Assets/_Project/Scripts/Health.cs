@@ -4,8 +4,9 @@ namespace Platformer {
     public class Health : MonoBehaviour {
         [SerializeField] int maxHealth = 100;
         [SerializeField] FloatEventChannel playerHealthChannel;
+        [SerializeField] private HealthBar healthBarUI;
 
-        int currentHealth;
+        [SerializeField] int currentHealth;
         
         public bool IsDead => currentHealth <= 0;
         
@@ -22,9 +23,20 @@ namespace Platformer {
             PublishHealthPercentage();
         }
 
-        void PublishHealthPercentage() {
+        void PublishHealthPercentage() 
+        {
+            float percent = currentHealth / (float)maxHealth;
+
             if (playerHealthChannel != null)
-                playerHealthChannel.Invoke(currentHealth / (float) maxHealth);
+            {
+                playerHealthChannel.Invoke(percent);
+            }
+
+            if (healthBarUI != null)
+            {
+                healthBarUI.UpdateHealthBar(percent);
+            }
+         
         }
     }
 }
