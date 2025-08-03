@@ -6,7 +6,7 @@ namespace Platformer {
         [SerializeField] FloatEventChannel playerHealthChannel;
         [SerializeField] private HealthBar healthBarUI;
 
-        [SerializeField] int currentHealth;
+        [SerializeField] public int currentHealth;
         
         public bool IsDead => currentHealth <= 0;
         

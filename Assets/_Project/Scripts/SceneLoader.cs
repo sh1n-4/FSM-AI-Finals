@@ -5,7 +5,7 @@ namespace Platformer
 {
     public class SceneLoader : MonoBehaviour
     {
-        [SerializeField] private string sceneName = "";
+        [SerializeField] public string sceneName = "";
 
         public void GoToScene()
         {
@@ -15,8 +15,8 @@ namespace Platformer
 
         public void ReloadCurrentScene()
         {
-            Scene currentScene = SceneManager.GetActiveScene();
-            SceneManager.LoadScene(currentScene.name);
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            //Time.timeScale = 1f;
         }
 
         public void QuitGame()

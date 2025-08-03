@@ -28,16 +28,7 @@ namespace Platformer
             if (target != null)
             {
                 transform.position = target.position + offset;
-
-                if (cam == null || !cam.isActiveAndEnabled)
-                {
-                    cam = Camera.main;
-                }
-
-                if (cam != null)
-                {
-                    transform.forward = cam.transform.forward;
-                }
+                fillImage.transform.rotation = Quaternion.LookRotation(cam.transform.forward);
             }
         }
 
