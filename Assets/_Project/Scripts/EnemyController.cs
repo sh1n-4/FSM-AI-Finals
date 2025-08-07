@@ -34,15 +34,9 @@ namespace Platformer
 
             var locomotionState = new Enemy_LocomotionState(this, anim);
             var attackState = new Enemy_AttackState(this, anim);
-            var dashState = new Enemy_DashState(this, anim);
-            var jumpState = new Enemy_JumpState(this, anim);
             var chaseState = new Enemy_ChaseState(this, anim);
 
             Debug.Log($"[CanAttack] InRange: {detector.CanAttackPlayer()}, CooldownReady: {attackTimer.IsFinished}");
-
-
-            /*FuncPredicate CanAttackWithCooldown = new FuncPredicate(() =>
-                detector.CanAttackPlayer() && attackTimer.IsFinished);*/
 
             At(locomotionState, attackState, new FuncPredicate(() =>
                 detector.CanAttackPlayer() && attackTimer.IsFinished));
@@ -106,10 +100,6 @@ namespace Platformer
             anim.SetFloat("Speed",  speedPercent, 0.1f, Time.deltaTime);
         }
 
-        void OnDrawGizmosSelected()
-        {
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawWireSphere(transform.position, attackDistance);
-        }
+        
     }
 }

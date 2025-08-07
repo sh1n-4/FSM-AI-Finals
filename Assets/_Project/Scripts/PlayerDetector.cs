@@ -40,17 +40,24 @@ namespace Platformer {
         public void SetDetectionStrategy(IDetectionStrategy detectionStrategy) => this.detectionStrategy = detectionStrategy;
         
         void OnDrawGizmos() {
-            Gizmos.color = Color.red;
+
 
             // Draw a spheres for the radii
+            Gizmos.color = Color.yellow;
             Gizmos.DrawWireSphere(transform.position, detectionRadius);
+
+            Gizmos.color = Color.orange;
             Gizmos.DrawWireSphere(transform.position, innerDetectionRadius);
+
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(transform.position, attackRange);
 
             // Calculate our cone directions
             Vector3 forwardConeDirection = Quaternion.Euler(0, detectionAngle / 2, 0) * transform.forward * detectionRadius;
             Vector3 backwardConeDirection = Quaternion.Euler(0, -detectionAngle / 2, 0) * transform.forward * detectionRadius;
 
             // Draw lines to represent the cone
+            Gizmos.color = Color.orange;
             Gizmos.DrawLine(transform.position, transform.position + forwardConeDirection);
             Gizmos.DrawLine(transform.position, transform.position + backwardConeDirection);
         }
